@@ -860,8 +860,8 @@ window.addEventListener('load', async ()=>{
   // Always hide loading after 3 seconds max
   const loadTimer = setTimeout(hideLoading, 3000);
   try {
-    await syncData(true);
-  } catch(e) {}
+    const loadTimer = setTimeout(hideLoading, 3000);
+  try { await syncData(true); } catch(e) {}
   clearTimeout(loadTimer);
   hideLoading();
   registerSW();
