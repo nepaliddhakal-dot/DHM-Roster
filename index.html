@@ -1307,18 +1307,20 @@ async function doAdminLogin(){
   const u=document.getElementById('al-user').value.trim();
   const p=document.getElementById('al-pin').value.trim();
   const err=document.getElementById('al-err');
-  err.textContent='';
+  err.textContent='⏳ Checking credentials...';
 
   let ok=false, adminName='', isMaster=false;
 
-  // ALWAYS check server first so password changes on one browser work everywhere
+  // ALWAYS check Google Sheets first - so password changes sync across all browsers
   if(S.scriptUrl){
     try{
-      const res=await fetch(S.scriptUrl+'?action=getCreds');
+      const controller=new AbortController();
+      const timeout=setTimeout(()=>controller.abort(),5000);
+      const res=await fetch(S.scriptUrl+'?action=getCreds',{signal:controller.signal});
+      clearTimeout(timeout);
       const d=await res.json();
       if(u===(d.username||'admin')&&p===(d.pin||'1234')){
         ok=true; adminName=u+' (Master)'; isMaster=true;
-        // Update local cache
         S.adminCreds={username:d.username||'admin',pin:d.pin||'1234'};
         localStorage.setItem('mfd_admin',JSON.stringify(S.adminCreds));
       }
@@ -1769,13 +1771,19 @@ async function saveMasterCreds(){
   localStorage.setItem('mfd_admin',JSON.stringify(S.adminCreds));
   // Save to Google Sheets so ALL browsers get the new password
   if(S.scriptUrl&&p){
-    showToast('Syncing credentials...',50);
+    showToast('Syncing credentials to cloud...',50);
     try{
-      await fetch(S.scriptUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveCreds',username:u,pin:p})});
+      await fetch(S.scriptUrl,{method:'POST',mode:'no-cors',
+        body:JSON.stringify({action:'saveCreds',username:u,pin:p})});
       showToast('✅ Saved to cloud!',100); setTimeout(hideToast,1500);
-    }catch(e){ hideToast(); }
+      alert('✅ Password changed! All browsers will get new password on next login.');
+    }catch(e){
+      hideToast();
+      alert('✅ Saved locally. Check internet connection.');
+    }
+  } else {
+    alert('✅ Username saved!');
   }
-  alert('✅ Credentials saved! All browsers will use the new password.');
 }
 
 function addSubAdmin(){
@@ -1905,7 +1913,7 @@ async function submitSwapRequest(){
       })
     });
     document.getElementById('swap-modal').style.display='none';
-   alert('✅ Request sent to Admin! Admin लाई अनुरोध पठाइयो।');
+    alert('✅ Request sent to Admin! Admin लाई अनुरोध पठाइयो।');
   }catch(e){
     errEl.textContent='❌ Failed to send. Check connection.';
   }
@@ -1969,10 +1977,11 @@ async function submitNewPin(){
   S.adminCreds={username:u,pin:p1};
   localStorage.setItem('mfd_admin',JSON.stringify(S.adminCreds));
   try{
-    await fetch(S.scriptUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveCreds',username:u,pin:p1})});
+    await fetch(S.scriptUrl,{method:'POST',mode:'no-cors',
+      body:JSON.stringify({action:'saveCreds',username:u,pin:p1})});
   }catch(e){}
   document.getElementById('reset-pin-modal').style.display='none';
-  alert('✅ Password changed successfully! All browsers updated.');
+  alert('✅ Password changed successfully! All browsers will use the new password.');
 }
 
 // ══ FIX 2: NEPALI DATE HELPER ══
