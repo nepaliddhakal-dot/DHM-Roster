@@ -1319,9 +1319,9 @@ async function doAdminLogin(){
       const res=await fetch(S.scriptUrl+'?action=getCreds',{signal:controller.signal});
       clearTimeout(timeout);
       const d=await res.json();
-      if(u===(d.username||'admin')&&p===(d.pin||'1234')){
+      if(d.username&&d.pin&&u===d.username&&p===d.pin){
         ok=true; adminName=u+' (Master)'; isMaster=true;
-        S.adminCreds={username:d.username||'admin',pin:d.pin||'1234'};
+       S.adminCreds={username:d.username,pin:d.pin};
         localStorage.setItem('mfd_admin',JSON.stringify(S.adminCreds));
       }
     }catch(e){}
