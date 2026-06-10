@@ -11,6 +11,8 @@
 <link rel="manifest" href="manifest.json"/>
 <link rel="apple-touch-icon" href="icons/icon-192.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 <style>
 :root {
   --bg: #0d1520;
@@ -1842,9 +1844,26 @@ async function toggleNotifFromIcon(){
     if(!('Notification' in window)){alert('Browser does not support notifications.');return;}
     const perm=await Notification.requestPermission();
     if(perm!=='granted'){alert('Permission denied.');return;}
-    const token='device_'+Date.now()+'_'+Math.random().toString(36).slice(2);
-    S.fcmToken=token; localStorage.setItem('mfd_fcm',token);
-    await regToken(token);
+   try {
+  const app = firebase.initializeApp({
+    apiKey: "AIzaSyCAjEiQQkBeVEzzzTorNVgWg3RIgi7Tz54",
+    authDomain: "mfd-roster.firebaseapp.com",
+    projectId: "mfd-roster",
+    messagingSenderId: "757155484481",
+    appId: "1:757155484481:web:42046945a74ce853de07c0"
+  });
+  const messaging = firebase.messaging();
+  const token = await messaging.getToken({
+    vapidKey: 'BFsAYUzrl_Jrq8QIt0aW_4Mf6C86KYIHIYo5B-4Pz3eD2Lt15aL3R_zmw1TLjMEJzYOE-cyXFvJrYR1eSYBzsIU'  // ← get this from Firebase Console
+  });
+  S.fcmToken = token;
+  localStorage.setItem('mfd_fcm', token);
+  await regToken(token);
+  updateNotifIcon();
+  alert('✅ Notifications enabled!');
+} catch(err) {
+  alert('❌ FCM Error: ' + err.message);
+}
     updateNotifIcon();
     alert('✅ Notifications enabled!\nYou will receive alerts at 5:30 AM and 8:30 PM daily.');
   }
