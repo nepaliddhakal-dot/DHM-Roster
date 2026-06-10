@@ -1736,7 +1736,7 @@ async function saveEditedRoster(){
 // ADMIN — ADMINS TAB
 // ═══════════════════════════════
 function renderAdminsTab(){
-  document.getElementById('ma-user').value=S.adminCreds.username||'admin';
+  document.getElementById('ma-user').value=S.adminCreds.username||'';
   const el=document.getElementById('sub-admin-list');
   if(!S.subAdmins.length){el.innerHTML='<div style="color:var(--text3);font-size:13px">No sub-admins yet.</div>';return;}
   el.innerHTML=S.subAdmins.map((sa,i)=>`
