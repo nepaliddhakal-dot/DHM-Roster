@@ -852,19 +852,16 @@ function todayISO(){ return toISO(new Date()); }
 // ═══════════════════════════════
 // INIT
 // ═══════════════════════════════
-window.addEventListener('load', async ()=>{
+window.addEventListener('load', ()=>{
   loadLocal();
   // Check saved session
   const su = localStorage.getItem('mfd_user');
   if(su){ S.user=JSON.parse(su); enterApp(); }
-  // Always hide loading after 3 seconds max
-  const loadTimer = setTimeout(hideLoading, 3000);
-  try {
-    const loadTimer = setTimeout(hideLoading, 3000);
-  try { await syncData(true); } catch(e) {}
-  clearTimeout(loadTimer);
+  // Hide loading immediately - sync in background
   hideLoading();
   registerSW();
+  // Sync after page is shown
+  setTimeout(()=>{ syncData(true).catch(()=>{}); }, 500);
 });
 
 // ── DEFAULT SCRIPT URL ── paste yours here so ALL browsers work automatically
