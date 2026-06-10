@@ -1321,13 +1321,13 @@ async function doAdminLogin(){
       const d=await res.json();
       if(d.username&&d.pin&&u===d.username&&p===d.pin){
         ok=true; adminName=u+' (Master)'; isMaster=true;
-       S.adminCreds={username:d.username,pin:d.pin};
+        S.adminCreds={username:d.username,pin:d.pin};
         localStorage.setItem('mfd_admin',JSON.stringify(S.adminCreds));
       }
     }catch(e){}
   }
   // Fallback to local if server unreachable
-  if(!ok && S.adminCreds.username && u===S.adminCreds.username && p===S.adminCreds.pin)
+  if(!ok && S.adminCreds.username && S.adminCreds.pin && u===S.adminCreds.username && p===S.adminCreds.pin){ ok=true; adminName=u+' (Master)'; isMaster=true; }
   // Check sub-admins
   if(!ok){ const sa=S.subAdmins.find(a=>a.username===u&&a.pin===p); if(sa){ok=true;adminName=sa.username;} }
 
