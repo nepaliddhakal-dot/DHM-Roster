@@ -765,7 +765,7 @@ const S = {
   rosters: {},
   staff: {observer:[],forecaster:[],sdm:[]},
   scriptUrl: '',
-  adminCreds: {username:'admin',pin:'1234'},
+  adminCreds: {username:'',pin:''},
   subAdmins: [],
   currentAdmin: null,
   calYear: new Date().getFullYear(),
@@ -1327,7 +1327,7 @@ async function doAdminLogin(){
     }catch(e){}
   }
   // Fallback to local if server unreachable
-  if(!ok && u===S.adminCreds.username && p===S.adminCreds.pin){ ok=true; adminName=u+' (Master)'; isMaster=true; }
+  if(!ok && S.adminCreds.username && u===S.adminCreds.username && p===S.adminCreds.pin)
   // Check sub-admins
   if(!ok){ const sa=S.subAdmins.find(a=>a.username===u&&a.pin===p); if(sa){ok=true;adminName=sa.username;} }
 
