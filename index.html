@@ -1771,7 +1771,7 @@ async function saveMasterCreds(){
   if(S.scriptUrl&&p){
     showToast('Syncing credentials...',50);
     try{
-      await fetch(S.scriptUrl,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'saveCreds',username:u,pin:p})});
+      await fetch(S.scriptUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveCreds',username:u,pin:p})});
       showToast('✅ Saved to cloud!',100); setTimeout(hideToast,1500);
     }catch(e){ hideToast(); }
   }
@@ -1969,8 +1969,7 @@ async function submitNewPin(){
   S.adminCreds={username:u,pin:p1};
   localStorage.setItem('mfd_admin',JSON.stringify(S.adminCreds));
   try{
-    await fetch(S.scriptUrl,{method:'POST',mode:'no-cors',
-      body:JSON.stringify({action:'saveCreds',username:u,pin:p1})});
+    await fetch(S.scriptUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveCreds',username:u,pin:p1})});
   }catch(e){}
   document.getElementById('reset-pin-modal').style.display='none';
   alert('✅ Password changed successfully! All browsers updated.');
