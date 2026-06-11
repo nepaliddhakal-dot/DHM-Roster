@@ -484,13 +484,16 @@ textarea.fi{resize:vertical;min-height:80px}
 
     <!-- MY DUTIES -->
     <div class="tab-panel" id="tab-myduties">
-      <div class="month-nav">
+     <div class="month-nav">
         <button class="nav-arrow" onclick="mdPrev()">‹</button>
-        <div style="text-align:center">
+        <div style="text-align:center;flex:1">
           <div class="mn-title" id="md-month-title">--</div>
-          <div class="mn-nepali" id="md-month-nepali">--</div>
         </div>
         <button class="nav-arrow" onclick="mdNext()">›</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 16px 8px;border-bottom:1px solid var(--border);flex-shrink:0">
+        <span id="md-today-en" style="font-size:12px;color:var(--text2)"></span>
+        <span id="md-today-np" style="font-size:12px;color:var(--accent);font-weight:600"></span>
       </div>
       <div id="md-list" style="flex:1;overflow-y:auto"></div>
     </div>
@@ -1151,6 +1154,11 @@ function renderMyDuties(){
   const {name,role}=S.user;
   const isoPrefix=`${S.mdYear}-${String(S.mdMonth+1).padStart(2,'0')}`;
   document.getElementById('md-month-title').textContent=MONTHS[S.mdMonth]+' '+S.mdYear;
+  const todayEn=document.getElementById('md-today-en');
+  const todayNp=document.getElementById('md-today-np');
+  const nowD=new Date();
+  if(todayEn) todayEn.textContent=DAYS[nowD.getDay()]+', '+String(nowD.getDate()).padStart(2,'0')+'/'+String(nowD.getMonth()+1).padStart(2,'0')+'/'+nowD.getFullYear();
+  if(todayNp) todayNp.textContent=toNepali(todayISO());
 
   const months=getMonthsForRole(role);
   // Find the month that contains this year-month
@@ -1178,10 +1186,11 @@ function renderMyDuties(){
     const shift=day.duties?day.duties[name]:'';
     const off=isOff(shift);
     const npD=toNepali(iso);
-    html+=`<div class="duty-day-row" onclick="showDayModal('${iso}', null)">
+    const isToday=iso===todayISO();
+    html+=`<div class="duty-day-row" onclick="showDayModal('${iso}', null)" style="${isToday?'background:rgba(56,189,248,.07);border-left:3px solid var(--accent);':''}">
       <div class="ddr-left">
-        <span class="ddr-dow">${DAYS[dt.getDay()]}</span>
-        <span class="ddr-date" style="color:var(--accent);font-weight:700">${npD}</span>
+        <span class="ddr-dow" style="${isToday?'color:var(--accent);font-weight:700':''}">${DAYS[dt.getDay()]}</span>
+        <span class="ddr-date" style="color:var(--accent);font-weight:${isToday?'800':'700'};font-size:${isToday?'18px':'16px'}">${npD}</span>
         <span class="ddr-nepali">${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}</span>
       </div>
       <div class="ddr-right">
