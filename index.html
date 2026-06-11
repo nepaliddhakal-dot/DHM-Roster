@@ -854,8 +854,13 @@ function initials(name){ return (name||'??').split(' ').map(w=>w[0]).join('').to
 function isOff(s){ return !s||s==='xx'||s==='XX'; }
 function dutyLabel(s){ return DUTY_NAMES[s]||s||'Day off'; }
 function toISO(d){ return d.toISOString().slice(0,10); }
-function todayISO(){ return toISO(new Date()); }
-
+function todayISO(){
+  const now = new Date();
+  const nepalOffset = 5 * 60 + 45;
+  const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const nepalMs = utcMs + (nepalOffset * 60000);
+  return toISO(new Date(nepalMs));
+}
 // ═══════════════════════════════
 // INIT
 // ═══════════════════════════════
@@ -1060,7 +1065,9 @@ function switchAdminTab(tab,el){
 // ═══════════════════════════════
 function renderToday(){
   if(!S.user) return;
-  const now=new Date();
+  const nepalOffset = 5 * 60 + 45;
+const utcMs = new Date().getTime() + (new Date().getTimezoneOffset() * 60000);
+const now = new Date(utcMs + (nepalOffset * 60000));
   const iso=todayISO();
   const npDate=toNepali(iso);
   document.getElementById('today-month-line').textContent=MONTHS[now.getMonth()]+' '+now.getFullYear();
@@ -2020,7 +2027,7 @@ const NP_MONTHS = ['बैशाख','जेठ','असार','साउन','
 function toNepali(iso){
   if(!iso) return '';
   // Simple offset: 2026-04-14 = 2083 Baisakh 1
-  const base = new Date('2026-04-14');
+  const base = new Date('2026-04-14T00:00:00+05:45');
   const dt = new Date(iso);
   const diff = Math.round((dt - base)/(1000*60*60*24));
   // BS month lengths for 2083
