@@ -1,5 +1,5 @@
 // ── Change this version number every time you update the app ──
-const VERSION = 'mfd-roster-v6.1';
+const VERSION = 'mfd-roster-v7';
 const CACHE_NAME = VERSION;
 const ASSETS = ['./','./index.html','./manifest.json'];
 
